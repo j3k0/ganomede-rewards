@@ -1,8 +1,8 @@
 'use strict';
 
-const util = require('util');
 const bunyan = require('bunyan');
 const pkg = require('./package.json');
+const {debugInspect, debugPrint} = require('./src/utils');
 
 const parseLogLevel = (envValue) => {
   const defaultLevel = 'INFO';
@@ -22,7 +22,7 @@ const parseLogLevel = (envValue) => {
   const level = hasMatch ? desiredLevel : defaultLevel;
 
   if (!hasMatch) {
-    const available = `Please specify one of ${util.inspect(levels)}.`;
+    const available = `Please specify one of ${debugInspect(levels)}.`;
     const message = `Uknown log level "${desiredLevel}". ${available}`;
     throw new Error(message);
   }
@@ -41,6 +41,24 @@ const parseApiSecret = () => {
   return process.env.API_SECRET;
 };
 
+const nonempty = function (envName, defaultValue) {
+  const val = process.env[envName];
+  const has = process.env.hasOwnProperty(envName);
+  const ok = has && (val.length > 0);
+
+  if (has) {
+    if (ok)
+      return val;
+
+    throw new Error(`Env var ${envName} must be non-empty string empty`);
+  }
+
+  if (arguments.length === 2)
+    return defaultValue;
+
+  throw new Error(`Env var ${envName} is missing`);
+};
+
 module.exports = {
   name: pkg.name,
   logLevel: parseLogLevel(process.env.LOG_LEVEL),
@@ -53,8 +71,14 @@ module.exports = {
       ? parseInt(process.env.PORT, 10)
       : 8000,
     prefix: `/${pkg.api}`
+  },
+
+  statsd: {
+    hostname: nonempty('STATSD_HOST', false),
+    port: nonempty('STATSD_PORT', false),
+    prefix: nonempty('STATSD_PREFIX', 'rewards.worker.')
   }
 };
 
 if (!module.parent)
-  require('./src/utils').debugPrint(module.exports);
+  debugPrint(module.exports);
