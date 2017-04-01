@@ -11,7 +11,7 @@
     "test": "LOG_LEVEL=FATAL mocha --bail --no-exit --throw-deprecation tests/helper.js 'tests/**/*.test.js'",
     "testw": "nodemon --watch src/ --watch tests/ --watch config.js --exec 'npm test'",
     "coverage": "istanbul cover _mocha -- -b tests/ && istanbul report",
-    "lint": "eslint src/ tests/ index.js config.js"
+    "lint": "eslint bin/* src/ tests/ index.js config.js"
   },
   "repository": {
     "type": "git",
