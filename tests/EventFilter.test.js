@@ -171,8 +171,8 @@ describe('EventFilter', () => {
 
   describe('.allowFrom()', () => {
     it('events with matching from values are accepted', (done) => {
-      const filter = EventFilter.allowTypes('apple', 'banana');
-      filter({id: 42, type: 'banana'}, done);
+      const filter = EventFilter.allowFrom('app x');
+      filter({id: 42, from: 'app x'}, done);
     });
 
     it('non-matching event from values are EventIgnoredError with nice message', (done) => {
