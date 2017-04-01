@@ -19,5 +19,10 @@ const debugPrint = (what, {
 module.exports = {
   debugInspect,
   debugPrint,
-  hasOwnProperty: (obj, prop) => Object.hasOwnProperty.call(obj, prop)
+  hasOwnProperty: (obj, prop) => Object.hasOwnProperty.call(obj, prop),
+  toArray: (arg) => {
+    return Array.isArray(arg)
+      ? arg
+      : [arg];
+  }
 };
