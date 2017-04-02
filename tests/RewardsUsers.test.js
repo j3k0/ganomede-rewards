@@ -52,30 +52,16 @@ describe('RewardsUsers', () => {
   });
 
   describe('#hasReward()', () => {
-    it('returns true for truthy values', (done) => {
-      const usermeta = td.object(['read']);
+    it('delegates to UsermetaClient#hasKey()', (done) => {
+      const usermeta = td.object(['hasKey']);
       const rewardsUsers = createClient({usermeta});
 
-      td.when(usermeta.read('alice', rewardMetaKey, td.callback))
-        .thenCallback(null, {alice: {[rewardMetaKey]: new Date().toISOString()}});
+      td.when(usermeta.hasKey('alice', rewardMetaKey, td.callback))
+        .thenCallback(null, true);
 
       rewardsUsers.hasReward('alice', (err, rewarded) => {
         expect(err).to.be.null;
         expect(rewarded).to.be.true;
-        done();
-      });
-    });
-
-    it('returns false for missing values', (done) => {
-      const usermeta = td.object(['read']);
-      const rewardsUsers = createClient({usermeta});
-
-      td.when(usermeta.read('alice', `$reward$${rewardId}`, td.callback))
-        .thenCallback(null, {alice: {}});
-
-      rewardsUsers.hasReward('alice', (err, rewarded) => {
-        expect(err).to.be.null;
-        expect(rewarded).to.be.false;
         done();
       });
     });

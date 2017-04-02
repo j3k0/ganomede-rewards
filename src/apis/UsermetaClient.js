@@ -24,6 +24,14 @@ class UsermetaClient extends BaseClient {
 
     this.apiCall('post', path, {value}, callback);
   }
+
+  hasKey (userId, metaName, callback) {
+    this.read(userId, metaName, (err, reply) => {
+      return err
+        ? callback(err)
+        : callback(null, reply[userId].hasOwnProperty(metaName));
+    });
+  }
 }
 
 module.exports = UsermetaClient;

@@ -64,4 +64,36 @@ describe('UsermetaClient', () => {
       });
     });
   });
+
+  describe('#hasKey()', () => {
+    it('returns true for existing keys', (done) => {
+      const client = createClient('1');
+
+      td.replace(client.api, 'get', td.function());
+
+      td.when(client.api.get('/usermeta/v1/alice/key?secret=1', td.callback))
+        .thenCallback(null, {}, {}, {alice: {key: ''}});
+
+      client.hasKey('alice', 'key', (err, has) => {
+        expect(err).to.be.null;
+        expect(has).to.be.true;
+        done();
+      });
+    });
+
+    it('returns false for missing keys', (done) => {
+      const client = createClient('1');
+
+      td.replace(client.api, 'get', td.function());
+
+      td.when(client.api.get('/usermeta/v1/alice/key?secret=1', td.callback))
+        .thenCallback(null, {}, {}, {alice: {}});
+
+      client.hasKey('alice', 'key', (err, has) => {
+        expect(err).to.be.null;
+        expect(has).to.be.false;
+        done();
+      });
+    });
+  });
 });

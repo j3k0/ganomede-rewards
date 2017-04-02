@@ -23,13 +23,7 @@ class RewardsUsers {
   }
 
   hasReward (userId, callback) {
-    const key = this._key();
-
-    this.usermeta.read(userId, key, (err, reply) => {
-      return err
-        ? callback(err)
-        : callback(null, !!reply[userId][key]);
-    });
+    this.usermeta.hasKey(userId, this._key(), callback);
   }
 }
 
