@@ -101,6 +101,7 @@ const work = () => {
     hostname: config.vcurrencyA.host,
     port: config.vcurrencyA.port,
     pathnamePrefix: config.vcurrencyA.pathnamePrefix,
+    rewardFrom: config.api,
     secret: config.secret
   });
 

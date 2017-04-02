@@ -73,6 +73,7 @@ const nonemptyInt = (...args) => {
 
 module.exports = {
   name: pkg.name,
+  api: pkg.api,
   logLevel: parseLogLevel(process.env.LOG_LEVEL),
   secret: process.env.hasOwnProperty('API_SECRET') && parseApiSecret(),
   production: process.env.NODE_ENV === 'production',
