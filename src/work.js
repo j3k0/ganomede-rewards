@@ -13,7 +13,6 @@ const config = require('../config');
 
 class Worker {
   constructor ({
-    usermetaA,
     rewardsUsers,
     events,
     channel,
@@ -29,8 +28,7 @@ class Worker {
       EventFilter.allowTypes('LOGIN'),
       EventFilter.allowFrom(config.appNameB),
       EventFilter.requireData('userId'),
-      EventFilter.createAsync((event, cb) => usermetaA.hasKey(event.data.userId, 'auth', cb)),
-      EventFilter.createAsync((event, cb) => rewardsUsers.missingReward(event.data.userId, cb))
+      EventFilter.createAsync((event, cb) => rewardsUsers.shouldReward(event.data.userId, cb))
     ];
 
     this.onEvent = this.onEvent.bind(this);

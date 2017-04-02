@@ -5,7 +5,7 @@ const RewardsUsers = require('../src/RewardsUsers');
 describe('RewardsUsers', () => {
   const rewardId = 'login to game B and receive game A bonus';
   const rewardMetaKey = `$reward$${rewardId}`;
-  const createClient = ({usermeta = td.object(), vcurrency = td.object()}) => new RewardsUsers({
+  const createClient = ({usermeta = td.object(), vcurrency = td.object()} = {}) => new RewardsUsers({
     rewardId,
     amount: 100,
     currency: 'game A coins',
@@ -51,18 +51,42 @@ describe('RewardsUsers', () => {
     });
   });
 
-  describe('#missingReward()', () => {
-    it('calls UsermetaClient#hasKey() and negates its reply', (done) => {
-      const usermeta = td.object(['hasKey']);
+  describe('#shouldReward()', () => {
+    it('fetches usermeta keys and asks ._shouldRewardInternal() with their values', (done) => {
+      const usermeta = td.object(['read']);
       const rewardsUsers = createClient({usermeta});
+      const ref = {};
 
-      td.when(usermeta.hasKey('alice', rewardMetaKey, td.callback))
-        .thenCallback(null, true);
+      td.replace(RewardsUsers, '_shouldRewardInternal', td.function());
 
-      rewardsUsers.missingReward('alice', (err, missingReward) => {
+      td.when(usermeta.read('alice', ['auth', rewardMetaKey], td.callback))
+        .thenCallback(null, {alice: {auth: 'a', [rewardMetaKey]: 'b'}});
+
+      td.when(RewardsUsers._shouldRewardInternal({auth: 'a', [rewardMetaKey]: 'b'}, rewardMetaKey))
+        .thenReturn(ref);
+
+      rewardsUsers.shouldReward('alice', (err, should) => {
         expect(err).to.be.null;
-        expect(missingReward).to.be.false;
+        expect(should).to.equal(ref);
         done();
+      });
+    });
+
+    describe('#_shouldRewardInternal()', () => {
+      it('returns true when only auth is present', () => {
+        expect(RewardsUsers._shouldRewardInternal({auth: 'auth'}, 'rewardId')).to.be.true;
+      });
+
+      it('returs false when both are present', () => {
+        expect(RewardsUsers._shouldRewardInternal({
+          auth: 'auth',
+          rewardId: 'asd'
+        }, 'rewardId')).to.be.false;
+      });
+
+      it('returns false when "auth" is missing', () => {
+        expect(RewardsUsers._shouldRewardInternal({}, '')).to.be.false;
+        expect(RewardsUsers._shouldRewardInternal({rewardId: 'asd'}, 'rewardId')).to.be.false;
       });
     });
   });

@@ -22,11 +22,17 @@ class RewardsUsers {
     ], callback);
   }
 
-  missingReward (userId, callback) {
-    this.usermeta.hasKey(userId, this._key(), (err, has) => {
+  static _shouldRewardInternal (obj, rewardIdKey) {
+    return obj.hasOwnProperty('auth') && !obj.hasOwnProperty(rewardIdKey);
+  }
+
+  shouldReward (userId, callback) {
+    const keys = ['auth', this._key()];
+
+    this.usermeta.read(userId, keys, (err, reply) => {
       return err
         ? callback(err)
-        : callback(null, !has);
+        : callback(null, RewardsUsers._shouldRewardInternal(reply[userId], keys[1]));
     });
   }
 }
