@@ -36,11 +36,42 @@ function exports {
   export APP_2_USERMETA_PORT_8000_TCP_PORT="4567"
 }
 
-function main {
-  exports
-  # node config
-  ./node_modules/.bin/mocha --bail --no-exit --throw-deprecation tests/helper.js "tests/**/*.test.js"
-  # LOG_LEVEL=INFO node index.js | ./node_modules/.bin/bunyan
+function mocha {
+  local executable=$1
+  local flags="--bail --no-exit --throw-deprecation tests/helper.js"
+  local files
+  files=$(find tests -name "*.test.js")
+  echo "./node_modules/.bin/$executable $flags $files"
 }
 
-main
+function istanbul {
+  local cmd="./node_modules/.bin/istanbul $*"
+  $cmd
+}
+
+function main {
+  exports
+
+  case "$1" in
+    config)
+      node config
+      ;;
+    test)
+      local cmd
+      cmd=$(mocha mocha)
+      $cmd
+      ;;
+    coverage)
+      local mochaCmd
+      local cmd
+      mochaCmd=$(mocha _mocha)
+      cmd="istanbul cover $mochaCmd"
+      $cmd && istanbul report
+      ;;
+    *)
+      echo $"Usage: $0 {config|test|coverage}"
+      exit 1
+  esac
+}
+
+main "$1"
