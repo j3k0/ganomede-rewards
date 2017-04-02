@@ -4,6 +4,8 @@ function exports {
   # General
   export API_SECRET="doesnt_matter"
   export LOG_LEVEL="FATAL"
+  export APP_1_NAME="old app to reward"
+  export APP_2_NAME="new app to login"
 
   # Reward
   export REWARD_APP_1_USER_LOGIN_APP_2_ID="reward-id"

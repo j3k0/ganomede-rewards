@@ -27,7 +27,7 @@ class Worker {
 
     this.checks = [
       EventFilter.allowTypes('LOGIN'),
-      EventFilter.allowFrom('App B'),
+      EventFilter.allowFrom(config.appNameB),
       EventFilter.requireData('userId'),
       EventFilter.createAsync((event, cb) => usermetaA.hasKey(event.data.userId, 'auth', cb)),
       EventFilter.createAsync((event, cb) => rewardsUsers.missingReward(event.data.userId, cb))

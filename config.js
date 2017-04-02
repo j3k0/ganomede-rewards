@@ -77,6 +77,9 @@ module.exports = {
   secret: process.env.hasOwnProperty('API_SECRET') && parseApiSecret(),
   production: process.env.NODE_ENV === 'production',
 
+  appNameA: nonempty('APP_1_NAME'),
+  appNameB: nonempty('APP_2_NAME'),
+
   http: {
     host: process.env.HOST || '0.0.0.0',
     port: process.env.hasOwnProperty('PORT')

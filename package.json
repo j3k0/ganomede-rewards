@@ -9,7 +9,7 @@
     "start": "node index.js",
     "startw": "nodemon --watch src/ --watch index.js --watch config.js --exec 'npm start'",
     "test": "./bin/run-tests test",
-    "testw": "nodemon --watch src/ --watch tests/ --watch config.js --exec 'npm test'",
+    "testw": "nodemon --watch src/ --watch tests/ --watch config.js --watch bin/run-tests --exec 'npm test'",
     "coverage": "./bin/run-tests coverage",
     "lint": "eslint bin/* src/ tests/ index.js config.js"
   },
