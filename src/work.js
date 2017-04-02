@@ -112,14 +112,6 @@ const work = () => {
     secret: config.secret
   });
 
-  const usermetaB = new UsermetaClient({
-    protocol: config.usermetaB.protocol,
-    hostname: config.usermetaB.host,
-    port: config.usermetaB.port,
-    pathnamePrefix: config.usermetaB.pathnamePrefix,
-    secret: config.secret
-  });
-
   const events = new EventsClient(config.events.clientId, {
     secret: config.secret,
     protocol: config.events.protocol,
@@ -134,7 +126,7 @@ const work = () => {
     rewardId: config.reward.id,
     amount: config.reward.amount,
     currency: config.reward.currency,
-    usermetaClient: usermetaB,
+    usermetaClient: usermetaA,
     virtualCurrencyClient: vcurrencyA
   });
 

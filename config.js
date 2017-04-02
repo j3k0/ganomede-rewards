@@ -110,11 +110,6 @@ module.exports = {
     ServiceEnv.config('APP_1_USERMETA', 8000)
   ),
 
-  usermetaB: Object.assign(
-    {pathnamePrefix: nonempty('APP_2_USERMETA_PREFIX', '/usermeta/v1')},
-    ServiceEnv.config('APP_2_USERMETA', 8000)
-  ),
-
   reward: {
     id: nonempty('REWARD_APP_1_USER_LOGIN_APP_2_ID'),
     amount: nonemptyInt('REWARD_APP_1_USER_LOGIN_APP_2_AMOUNT'),

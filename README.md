@@ -29,10 +29,6 @@ Reward our beloved players.
     - `APP_1_USERMETA_PORT_8000_TCP_[ADDR|PORT|PROTOCOL]` — IP|Port|Protocol to the usermeta service
     - `APP_1_USERMETA_PREFIX` — api prefix, defaults to `"/usermeta/v1"`
 
-  * usermeta of App 2
-    - `APP_2_USERMETA_PORT_8000_TCP_[ADDR|PORT|PROTOCOL]` — IP|Port|Protocol to the usermeta service
-    - `APP_2_USERMETA_PREFIX` — api prefix, defaults to `"/usermeta/v1"`
-
   * StatsD for tracking stats (if host or port are missing, no stats will be sent)
     - `STATSD_HOST`
     - `STATSD_PORT`
