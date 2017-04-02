@@ -4,17 +4,50 @@ Reward our beloved players.
 
 ## Configuration
 
- * `API_SECRET` — secret to compare to for internal access level
- * `APP_1_NAME` - Name of first app to monitor
- * `APP_2_NAME` - Name of second app to monitor
- * `APP_1_USERMETA_PORT_8000_TCP_[ADDR|PORT|PROTOCOL]` - IP|port|protocol of the usermeta service for app 1
- * `APP_2_USERMETA_PORT_8000_TCP_[ADDR|PORT|PROTOCOL]` - IP|port|protocol of the usermeta service for app 2
- * `APP_1_VIRTUALCURRENCY_PORT_8000_TCP_[ADDR|PORT|PROTOCOL]` - IP|port|protocol of the virtualcurrency service for app 1
- * `APP_2_VIRTUALCURRENCY_PORT_8000_TCP_[ADDR|PORT|PROTOCOL]` - IP|port|protocol of the virtualcurrency service for app 2
- * `EVENTS_PORT_8000_TCP_[ADDR|PORT|PROTOCOL]` - IP|port|protocol of the events service
- * `REWARD_APP_1_USER_LOGIN_APP_2_ID` - a string
- * `REWARD_APP_1_USER_LOGIN_APP_2_CURRENCY` - a string
- * `REWARD_APP_1_USER_LOGIN_APP_2_AMOUNT` - an integer
+  * `API_SECRET` — secret to compare to for internal access level
+
+  * `APP_1_NAME` — Name of first app to monitor
+
+  * `APP_2_NAME` — Name of second app to monitor
+
+  * Reward Information (reward is sent to App 1)
+    - `REWARD_APP_1_USER_LOGIN_APP_2_ID` — a string to be saved as `data.rewardId` in reward info
+    - `REWARD_APP_1_USER_LOGIN_APP_2_AMOUNT` — an integer specifying amount to reward
+    - `REWARD_APP_1_USER_LOGIN_APP_2_CURRENCY` — a string specifying currency to award
+
+  * ganomede-events instance
+    - `EVENTS_PORT_8000_TCP_[ADDR|PORT|PROTOCOL]` — IP|Port|Protocol to the events service
+    - `EVENTS_CLIENT_ID` — non-empty string to [identify this worker](https://github.com/j3k0/ -anomede-events#new-clientclientid-options)
+    - `EVENTS_CHANNEL` — non-empty string, defaults to `"users/v1"`, channel to listen for  -vents on
+    - `EVENTS_PREFIX` — api prefix, defaults to `"/events/v1"`
+
+  * virtual currency of App 1
+    - `APP_1_VIRTUALCURRENCY_PORT_8000_TCP_[ADDR|PORT|PROTOCOL]` — IP|port|protocol of the virtualcurrency service for app 1
+    - `APP_1_VIRTUALCURRENCY_PREFIX` — api prefix, defaults to `"/virtualcurrency/v1"`
+
+  * usermeta of App 1
+    - `APP_1_USERMETA_PORT_8000_TCP_[ADDR|PORT|PROTOCOL]` — IP|Port|Protocol to the usermeta service
+    - `APP_1_USERMETA_PREFIX` — api prefix, defaults to `"/usermeta/v1"`
+
+  * usermeta of App 2
+    - `APP_2_USERMETA_PORT_8000_TCP_[ADDR|PORT|PROTOCOL]` — IP|Port|Protocol to the usermeta service
+    - `APP_2_USERMETA_PREFIX` — api prefix, defaults to `"/usermeta/v1"`
+
+  * StatsD for tracking stats (if host or port are missing, no stats will be sent)
+    - `STATSD_HOST`
+    - `STATSD_PORT`
+    - `STATSD_PREFIX` defaults to `"mailchimp.registrations."`
+
+    This will track 4 integers:
+
+      - `events` total number of received events
+      - `failure` number of errors
+      - `success` number of successes
+      - `ignored` number of ignored events
+
+  * HTTP status server
+   - `HOST` non-empty string, defaults to `"0.0.0.0"`
+   - `PORT` non-empty string, defaults to `8000`
 
 ## Details
 

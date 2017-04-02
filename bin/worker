@@ -1,5 +1,11 @@
 #!/usr/bin/env node
 'use strict';
 
-if (!module.parent)
-  require('../src/work')();
+const work = require('../src/work');
+const logger = require('../src/logger');
+const config = require('../config');
+
+if (!module.parent) {
+  logger.info({config}, 'Running with config');
+  work();
+}

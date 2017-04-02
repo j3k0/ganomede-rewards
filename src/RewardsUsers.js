@@ -22,8 +22,12 @@ class RewardsUsers {
     ], callback);
   }
 
-  hasReward (userId, callback) {
-    this.usermeta.hasKey(userId, this._key(), callback);
+  missingReward (userId, callback) {
+    this.usermeta.hasKey(userId, this._key(), (err, has) => {
+      return err
+        ? callback(err)
+        : callback(null, !has);
+    });
   }
 }
 

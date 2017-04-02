@@ -51,17 +51,17 @@ describe('RewardsUsers', () => {
     });
   });
 
-  describe('#hasReward()', () => {
-    it('delegates to UsermetaClient#hasKey()', (done) => {
+  describe('#missingReward()', () => {
+    it('calls UsermetaClient#hasKey() and negates its reply', (done) => {
       const usermeta = td.object(['hasKey']);
       const rewardsUsers = createClient({usermeta});
 
       td.when(usermeta.hasKey('alice', rewardMetaKey, td.callback))
         .thenCallback(null, true);
 
-      rewardsUsers.hasReward('alice', (err, rewarded) => {
+      rewardsUsers.missingReward('alice', (err, missingReward) => {
         expect(err).to.be.null;
-        expect(rewarded).to.be.true;
+        expect(missingReward).to.be.false;
         done();
       });
     });

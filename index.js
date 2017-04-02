@@ -18,7 +18,7 @@ const main = () => {
   }
 
   if (cluster.isMaster) {
-    logger.info({config}, 'parsed config');
+    logger.info({config}, 'Running with config');
 
     // Start worker in master.
     work();

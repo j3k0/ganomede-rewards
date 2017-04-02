@@ -2,6 +2,7 @@
 
 const bunyan = require('bunyan');
 const pkg = require('./package.json');
+const ServiceEnv = require('./src/ServiceEnv');
 const {debugInspect, debugPrint} = require('./src/utils');
 
 const parseLogLevel = (envValue) => {
@@ -59,6 +60,17 @@ const nonempty = function (envName, defaultValue) {
   throw new Error(`Env var ${envName} is missing`);
 };
 
+const nonemptyInt = (...args) => {
+  const str = nonempty(...args);
+  const val = parseInt(str, 10);
+  const ok = isFinite(val) && (String(val) === str);
+
+  if (!ok)
+    throw new Error(`Evn var ${args[0]} is not a valid integer`);
+
+  return val;
+};
+
 module.exports = {
   name: pkg.name,
   logLevel: parseLogLevel(process.env.LOG_LEVEL),
@@ -77,6 +89,36 @@ module.exports = {
     hostname: nonempty('STATSD_HOST', false),
     port: nonempty('STATSD_PORT', false),
     prefix: nonempty('STATSD_PREFIX', 'rewards.worker.')
+  },
+
+  events: Object.assign(
+    {
+      clientId: nonempty('EVENTS_CLIENT_ID'),
+      channel: nonempty('EVENTS_CHANNEL', 'users/v1'),
+      pathnamePrefix: nonempty('EVENTS_PREFIX', '/events/v1')
+    },
+    ServiceEnv.config('EVENTS', 8000)
+  ),
+
+  vcurrencyA: Object.assign(
+    {pathnamePrefix: nonempty('APP_1_VIRTUALCURRENCY_PREFIX', '/virtualcurrency/v1')},
+    ServiceEnv.config('APP_1_VIRTUALCURRENCY', 8000)
+  ),
+
+  usermetaA: Object.assign(
+    {pathnamePrefix: nonempty('APP_1_USERMETA_PREFIX', '/usermeta/v1')},
+    ServiceEnv.config('APP_1_USERMETA', 8000)
+  ),
+
+  usermetaB: Object.assign(
+    {pathnamePrefix: nonempty('APP_2_USERMETA_PREFIX', '/usermeta/v1')},
+    ServiceEnv.config('APP_2_USERMETA', 8000)
+  ),
+
+  reward: {
+    id: nonempty('REWARD_APP_1_USER_LOGIN_APP_2_ID'),
+    amount: nonemptyInt('REWARD_APP_1_USER_LOGIN_APP_2_AMOUNT'),
+    currency: nonempty('REWARD_APP_1_USER_LOGIN_APP_2_CURRENCY')
   }
 };
 
