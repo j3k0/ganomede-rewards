@@ -49,6 +49,8 @@ Reward our beloved players.
 
 This module handles a single type of reward. More might come.
 
+<img width="460" src="./rewards.links.png" />
+
 ### Reward 1 / 1
 
 #### Requirement
