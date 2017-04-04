@@ -12,6 +12,7 @@ RUN cd /home/app/code && npm install
 
 # Copy app source files
 COPY index.js config.js /home/app/code/
+COPY bin /home/app/code/bin
 COPY src /home/app/code/src
 RUN chown -R app /home/app
 

@@ -1,6 +1,6 @@
 sut:
     build: .
-    command: sh -c "npm test && ./tests/rest_api.sh"
+    command: sh -c "./bin/wait-for-it app:8000 && npm test && ./tests/rest_api.sh"
     volumes:
      - ./src:/home/app/code/src
      - ./tests:/home/app/code/tests
@@ -10,13 +10,15 @@ sut:
      - app
     environment:
      - "API_SECRET=1234"
+     - "APP_1_NAME=app1"
+     - "APP_2_NAME=app2"
      - "BASE_URL=http://app:8000"
      - "LOG_LEVEL=error"
      - "NODE_ENV="
 
 app:
     build: .
-    command: node index.js | ./node_modules/.bin/bunyan -l 0
+    command: sh -c "./bin/wait-for-it -t 0 events:8000 && ./bin/wait-for-it -t 0 usermeta:8000 && node index.js | ./node_modules/.bin/bunyan -l 0"
     volumes:
      - ./src:/home/app/code/src
      - ./tests:/home/app/code/tests
@@ -24,7 +26,99 @@ app:
      - ./config.js:/home/app/code/config.js
     ports:
      - "8000:8000"
+    links:
+     - events
+     - usermeta
     environment:
+     - "EVENTS_PORT_8000_TCP_ADDR=events"
+     - "EVENTS_CLIENT_ID=tcid"
+     - "APP_1_NAME=app1"
+     - "APP_2_NAME=app2"
+     - "APP_1_VIRTUALCURRENCY_PORT_8000_TCP_ADDR=events"
+     - "APP_1_USERMETA_PORT_8000_TCP_ADDR=usermeta"
+     - "REWARD_APP_1_USER_LOGIN_APP_2_ID=ulaid"
+     - "REWARD_APP_1_USER_LOGIN_APP_2_AMOUNT=10"
+     - "REWARD_APP_1_USER_LOGIN_APP_2_CURRENCY=gold"
      - "API_SECRET=1234"
      - "LOG_LEVEL=info"
      - "NODE_ENV="
+
+usermeta:
+    image: ganomede/usermeta:v1.2.3
+    command: sh -c "/wait-for-it -t 0 redis:6379 && node index.js"
+    ports:
+     - "8003:8000"
+    links:
+     - redis
+     - directory
+    environment:
+     - "API_SECRET=1234"
+     - "USERMETA_PUBLIC_KEYS="
+     - "USERMETA_PROTECTED_KEYS="
+     - "USERMETA_PRIVATE_KEYS=auth"
+     - "USERMETA_INTERNAL_KEYS="
+     - "USERMETA_MAX_LENGTH=10000"
+     - "REDIS_USERMETA_PORT_6379_TCP_ADDR=redis"
+     - "REDIS_AUTH_PORT_6379_TCP_ADDR=redis"
+     - "DIRECTORY_PORT_8000_TCP_ADDR=directory"
+     - "LOG_LEVEL=debug"
+     - "NODE_ENV="
+    volumes:
+     - ./bin/wait-for-it:/wait-for-it
+
+events:
+    image: ganomede/events:v1.2.0
+    command: sh -c "/wait-for-it -t 0 redis:6379 && node index.js"
+    links:
+     - redis
+    environment:
+     - "API_SECRET=1234"
+     - "REDIS_EVENTS_PORT_6379_TCP_ADDR=redis"
+     - "LOG_LEVEL=debug"
+     - "NODE_ENV="
+    volumes:
+     - ./bin/wait-for-it:/wait-for-it
+
+
+directory:
+    image: ganomede/directory:v0.3.1
+    command: sh -c "/wait-for-it -t 0 redis:6379 && /wait-for-it -t 0 directorycouch:5984 && node index.js"
+    links:
+     - directorysync
+     - couch
+     - redis
+    ports:
+     - "8002:8000"
+    environment:
+     - "COUCH_DIRECTORY_PORT_5984_TCP_ADDR=couch"
+     - "REDIS_AUTH_PORT_6379_TCP_ADDR=redis"
+     - "API_SECRET=1234"
+     - "COUCH_DIRECTORY_SYNC="
+     - "LOG_LEVEL=debug"
+     - "NODE_ENV="
+    volumes:
+     - ./bin/wait-for-it:/wait-for-it
+
+# will just sync the database
+directorysync:
+    image: ganomede/directory:v0.3.1
+    command: sh -c "/wait-for-it -t 0 redis:6379 && /wait-for-it -t 0 directorycouch:5984 && node index.js"
+    links:
+     - couch
+     - redis
+    environment:
+     - "COUCH_DIRECTORY_PORT_5984_TCP_ADDR=couch"
+     - "REDIS_AUTH_PORT_6379_TCP_ADDR=redis"
+     - "API_SECRET=1234"
+     - "COUCH_DIRECTORY_SYNC=1"
+     - "LOG_LEVEL=debug"
+     - "NODE_ENV="
+    volumes:
+     - ./bin/wait-for-it:/wait-for-it
+
+redis:
+    image: redis:alpine
+
+couch:
+    image: klaemo/couchdb:1.6.1
+

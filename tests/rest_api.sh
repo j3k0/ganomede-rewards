@@ -1,7 +1,7 @@
 #!/bin/bash
 
 BASE_URL="${BASE_URL:-http://localhost:8000}"
-PREFIX="${BASE_URL}/REPLACE_THIS_WITH_YOUR_THING/v1"
+PREFIX="${BASE_URL}/rewards/v1"
 API_SECRET=${API_SECRET:-1234}
 
 #
@@ -29,4 +29,4 @@ it 'responds to /ping'
 
 it 'responds to /about'
     curl $PREFIX/about
-    outputIncludes '"type": "REPLACE_THIS_WITH_YOUR_THING"'
+    outputIncludes '"type": "rewards"'
