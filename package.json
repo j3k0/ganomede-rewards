@@ -37,7 +37,7 @@
     "async": "^2.1.2",
     "bunyan": "^1.8.1",
     "curtain-down": "^1.0.0",
-    "ganomede-events": "^1.2.1",
+    "ganomede-events": "^1.2.2",
     "lodash": "^4.17.2",
     "node-statsd": "^0.1.1",
     "restify": "^4.1.1",
