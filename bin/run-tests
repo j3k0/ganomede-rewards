@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+
+function exports {
+  # General
+  export API_SECRET="doesnt_matter"
+  export LOG_LEVEL="FATAL"
+  export APP_1_NAME="old app to reward"
+  export APP_2_NAME="new app to login"
+
+  # Reward
+  export REWARD_APP_1_USER_LOGIN_APP_2_ID="reward-id"
+  export REWARD_APP_1_USER_LOGIN_APP_2_AMOUNT="10"
+  export REWARD_APP_1_USER_LOGIN_APP_2_CURRENCY="silver"
+
+  # HTTP Server
+  export HOST="localhost"
+  export PORT="3000"
+
+  # Events
+  export EVENTS_CLIENT_ID="events_client_id"
+  export EVENTS_PORT_8000_TCP_PROTOCOL="http"
+  export EVENTS_PORT_8000_TCP_ADDR="127.0.0.1"
+  export EVENTS_PORT_8000_TCP_PORT="1234"
+
+  # Virtual Currency A
+  export APP_1_VIRTUALCURRENCY_PORT_8000_TCP_PROTOCOL="http"
+  export APP_1_VIRTUALCURRENCY_PORT_8000_TCP_ADDR="127.0.0.1"
+  export APP_1_VIRTUALCURRENCY_PORT_8000_TCP_PORT="2345"
+
+  # Usermeta A
+  export APP_1_USERMETA_PORT_8000_TCP_PROTOCOL="http"
+  export APP_1_USERMETA_PORT_8000_TCP_ADDR="127.0.0.1"
+  export APP_1_USERMETA_PORT_8000_TCP_PORT="3456"
+
+  # Usermeta B
+  export APP_2_USERMETA_PORT_8000_TCP_PROTOCOL="http"
+  export APP_2_USERMETA_PORT_8000_TCP_ADDR="127.0.0.1"
+  export APP_2_USERMETA_PORT_8000_TCP_PORT="4567"
+}
+
+function mocha {
+  local executable=$1
+  local flags="--bail --no-exit --throw-deprecation tests/helper.js"
+  local files
+  files=$(find tests -name "*.test.js")
+  echo "./node_modules/.bin/$executable $flags $files"
+}
+
+function istanbul {
+  local cmd="./node_modules/.bin/istanbul $*"
+  $cmd
+}
+
+function main {
+  exports
+
+  case "$1" in
+    config)
+      node config
+      ;;
+    test)
+      local cmd
+      cmd=$(mocha mocha)
+      $cmd
+      ;;
+    coverage)
+      local mochaCmd
+      local cmd
+      mochaCmd=$(mocha _mocha)
+      cmd="istanbul cover $mochaCmd"
+      $cmd && istanbul report
+      ;;
+    *)
+      echo $"Usage: $0 {config|test|coverage}"
+      exit 1
+  esac
+}
+
+main "$1"

@@ -1,0 +1,46 @@
+{
+  "name": "rewards",
+  "version": "1.0.0",
+  "private": true,
+  "api": "rewards/v1",
+  "description": "rewards microservice",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "startw": "nodemon --watch src/ --watch index.js --watch config.js --exec 'npm start'",
+    "test": "./bin/run-tests test",
+    "testw": "nodemon --watch src/ --watch tests/ --watch config.js --watch bin/run-tests --exec 'npm test'",
+    "coverage": "./bin/run-tests coverage",
+    "lint": "eslint bin/* src/ tests/ index.js config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/j3k0/ganomede-rewards.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "Trade Secret",
+  "bugs": {
+    "url": "https://github.com/j3k0/ganomede-rewards/issues"
+  },
+  "homepage": "https://github.com/j3k0/ganomede-rewards#readme",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "eslint": "^3.8.0",
+    "istanbul": "^0.4.5",
+    "mocha": "^3.1.2",
+    "nodemon": "^1.11.0",
+    "supertest": "^3.0.0",
+    "testdouble": "^2.1.2"
+  },
+  "dependencies": {
+    "async": "^2.1.2",
+    "bunyan": "^1.8.1",
+    "curtain-down": "^1.0.0",
+    "ganomede-events": "^1.2.2",
+    "lodash": "^4.17.2",
+    "node-statsd": "^0.1.1",
+    "restify": "^4.1.1",
+    "url-escape-tag": "^1.0.0"
+  }
+}
