@@ -1,6 +1,6 @@
 {
   "name": "rewards",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "api": "rewards/v1",
   "description": "rewards microservice",
@@ -39,6 +39,7 @@
     "curtain-down": "^1.0.0",
     "ganomede-events": "^1.2.2",
     "lodash": "^4.17.2",
+    "newrelic": "^2.4.1",
     "node-statsd": "^0.1.1",
     "restify": "^4.1.1",
     "url-escape-tag": "^1.0.0"
