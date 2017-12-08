@@ -116,7 +116,7 @@ const work = () => {
     protocol: config.events.protocol,
     hostname: config.events.host,
     port: config.events.port,
-    pathname: `${config.events.pathnamePrefix}/events`
+    pathname: `${config.events.pathnamePrefix}`
   });
 
   const statsd = new StatsdClient(config.statsd);
