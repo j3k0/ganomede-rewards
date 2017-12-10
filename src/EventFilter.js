@@ -122,12 +122,13 @@ class EventFilter {
 }
 
 EventFilter.EventIgnoredError = class EventIgnoredError extends GanomedeError {
-  constructor (event, reasonFormat) {
-    const format = reasonFormat
-      ? `Event(id=${event.id}) ignored: ${reasonFormat}`
+  constructor (event, reason) {
+    const format = reason
+      ? `Event(id=${event.id}) ignored: ${reason}`
       : `Event(id=${event.id}) ignored`;
 
     super(format);
+    this.severity = 'info';
   }
 };
 

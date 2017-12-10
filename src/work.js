@@ -51,8 +51,7 @@ class Worker {
       (cb) => cb(null, event),
       ...this.checks,
       (event, cb) => {
-        eventLogger.info('Sending Reward');
-        this.rewardsUsers.reward(eventLogger, event.data.userId.userId, cb);
+        this.rewardsUsers.reward(eventLogger, event.data.userId, cb);
       }
     ], (error) => {
       if (error instanceof EventFilter.EventIgnoredError) {

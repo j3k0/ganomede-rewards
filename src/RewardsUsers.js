@@ -16,14 +16,27 @@ class RewardsUsers {
   }
 
   reward (eventLogger, userId, callback) {
+    eventLogger.debug({userId}, 'Sending reward');
     async.series([
       (cb) => this.usermeta.write(userId, this._key(), String(Date.now()), cb),
       (cb) => this.vcurrency.reward(eventLogger, userId, this.amount, this.currency, {rewardId: this.rewardId}, cb)
     ], callback);
   }
 
-  static _shouldRewardInternal (obj, rewardIdKey) {
-    return obj.hasOwnProperty('auth') && !obj.hasOwnProperty(rewardIdKey);
+  static _alreadyRewarded (obj, rewardIdKey) {
+    return obj.hasOwnProperty(rewardIdKey);
+  }
+
+  static _authentified (obj) {
+    return obj.hasOwnProperty('auth');
+  }
+
+  static _reasonNotToReward (obj, rewardIdKey) {
+    if (!RewardsUsers._authentified(obj))
+      return 'user not identified';
+    if (RewardsUsers._alreadyRewarded(obj, rewardIdKey))
+      return 'user already rewarded';
+    return null;
   }
 
   shouldReward (userId, callback) {
@@ -31,9 +44,13 @@ class RewardsUsers {
     const keys = ['auth', rewardIdKey];
 
     this.usermeta.read(userId, keys, (err, reply) => {
-      return err
-        ? callback(err)
-        : callback(null, RewardsUsers._shouldRewardInternal(reply[userId], rewardIdKey));
+      if (err) {
+        callback(err);
+      }
+      else {
+        const reasonNotTo = RewardsUsers._reasonNotToReward(reply[userId], rewardIdKey);
+        callback(null, !reasonNotTo, reasonNotTo);
+      }
     });
   }
 }
