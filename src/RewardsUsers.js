@@ -27,12 +27,13 @@ class RewardsUsers {
   }
 
   shouldReward (userId, callback) {
-    const keys = ['auth', this._key()];
+    const rewardIdKey = this._key();
+    const keys = ['auth', rewardIdKey];
 
     this.usermeta.read(userId, keys, (err, reply) => {
       return err
         ? callback(err)
-        : callback(null, RewardsUsers._shouldRewardInternal(reply[userId], keys[1]));
+        : callback(null, RewardsUsers._shouldRewardInternal(reply[userId], rewardIdKey));
     });
   }
 }

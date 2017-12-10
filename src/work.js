@@ -44,21 +44,27 @@ class Worker {
 
     this.statsd.increment('events');
 
+    eventLogger = logger.child({eventId:event.id});
+    eventLogger.debug(event, 'onEvent');
+
     async.waterfall([
       (cb) => cb(null, event),
       ...this.checks,
-      (event, cb) => this.rewardsUsers.reward(event.data.userId.userId, cb)
+      (event, cb) => {
+        eventLogger.info('Sending Reward');
+        this.rewardsUsers.reward(event.data.userId.userId, cb)
+      }
     ], (error) => {
       if (error instanceof EventFilter.EventIgnoredError) {
-        logger.info({channel, error}, `Ignoring Event(id=${event.id})`);
+        eventLogger[error.severity || 'info']({channel, error}, 'Ignoring Event');
         this.statsd.increment('ignored');
       }
       else if (error) {
-        logger.error({channel, error}, `Failed to process Event(id=${event.id})`);
+        eventLogger[error.severity || 'error']({channel, error}, 'Failed to process Event');
         this.statsd.increment('failure');
       }
       else {
-        logger.info(`Processed Event(id=${event.id})`);
+        eventLogger.info('Processed Event');
         this.statsd.increment('success');
       }
     });

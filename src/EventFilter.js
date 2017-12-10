@@ -2,7 +2,7 @@
 
 const lodash = require('lodash');
 const {GanomedeError} = require('./errors');
-const {hasOwnProperty, toArray} = require('./utils');
+const {hasOwnProperty} = require('./utils');
 
 // Useful funcs to filter events.
 // (This should probably move into events lib.)
@@ -59,10 +59,10 @@ const {hasOwnProperty, toArray} = require('./utils');
 class EventFilter {
   static createSync (shouldAccept) {
     return (event, cb) => {
-      const [accept, ...customErrorMessage] = toArray(shouldAccept(event));
+      const [accept, customErrorMessage] = shouldAccept(event);
       const args = accept
         ? [null, event]
-        : [new EventFilter.EventIgnoredError(event, ...customErrorMessage)];
+        : [new EventFilter.EventIgnoredError(event, customErrorMessage)];
 
       setImmediate(cb, ...args);
     };
@@ -70,13 +70,13 @@ class EventFilter {
 
   static createAsync (shouldAccept) {
     return (event, cb) => {
-      shouldAccept(event, (err, accept, ...customErrorMessage) => {
+      shouldAccept(event, (err, accept, customErrorMessage) => {
         if (err)
           return cb(err);
 
         return accept
           ? cb(null, event)
-          : cb(new EventFilter.EventIgnoredError(event, ...customErrorMessage));
+          : cb(new EventFilter.EventIgnoredError(event, customErrorMessage));
       });
     };
   }
@@ -95,7 +95,7 @@ class EventFilter {
         const missing = !lodash.has(event.data, path);
 
         if (missing)
-          result = [false, 'data is missing path `%s`', path];
+          result = [false, 'data is missing path `' + path + '`'];
 
         return missing;
       });
@@ -107,27 +107,27 @@ class EventFilter {
   static allowFrom (...values) {
     return EventFilter.createSync((event) => {
       return values.includes(event.from)
-        ? true
-        : [false, 'only from values %j are allowed, got `%j`', values, event.from];
+        ? [true, null]
+        : [false, 'only from values ' + JSON.stringify(values) + ' are allowed, got `' + JSON.stringify(event.from) + '`'];
     });
   }
 
   static allowTypes (...types) {
     return EventFilter.createSync((event) => {
       return types.includes(event.type)
-        ? true
-        : [false, 'only types %j are allowed, got `%j`', types, event.type];
+        ? [true, null]
+        : [false, 'only types ' + JSON.stringify(types) + ' are allowed, got `' + JSON.stringify(event.type) + '`'];
     });
   }
 }
 
 EventFilter.EventIgnoredError = class EventIgnoredError extends GanomedeError {
-  constructor (event, reasonFormat, ...reasonParams) {
+  constructor (event, reasonFormat) {
     const format = reasonFormat
       ? `Event(id=${event.id}) ignored: ${reasonFormat}`
       : `Event(id=${event.id}) ignored`;
 
-    super(format, ...reasonParams);
+    super(format);
   }
 };
 

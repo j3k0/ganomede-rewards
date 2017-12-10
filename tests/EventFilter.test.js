@@ -6,19 +6,23 @@ const EventFilter = require('../src/EventFilter');
 describe('EventFilter', () => {
   const eventRef = {id: 42};
 
+  const shouldAccept = (accept, errorMessage) => {
+    const func = td.function();
+    td.when(func(eventRef)).thenReturn([accept, errorMessage]);
+    return func;
+  };
+
   describe('.createSync()', () => {
     it('invokes check function with (event)', (done) => {
-      const func = td.function();
-      const filter = EventFilter.createSync(func);
-
-      filter(eventRef, () => {
-        td.verify(func(eventRef));
+      const filter = EventFilter.createSync(shouldAccept(true));
+      filter(eventRef, (error, event) => {
+        expect(event).to.equal(eventRef);
         done();
       });
     });
 
     it('callback invoked on next tick', (done) => {
-      const filter = EventFilter.createSync(() => true);
+      const filter = EventFilter.createSync(shouldAccept(true))
       let sameTick = true;
 
       filter(eventRef, () => {
@@ -30,7 +34,7 @@ describe('EventFilter', () => {
     });
 
     it('invokes callback(null, event) when function returns true', (done) => {
-      const filter = EventFilter.createSync(() => true);
+      const filter = EventFilter.createSync(shouldAccept(true));
 
       filter(eventRef, (err, event) => {
         expect(err).to.be.null;
@@ -40,7 +44,7 @@ describe('EventFilter', () => {
     });
 
     it('invokes callback(EventIgnoredError) when function returns false', (done) => {
-      const filter = EventFilter.createSync(() => false);
+      const filter = EventFilter.createSync(shouldAccept(false));
 
       filter(eventRef, (err, event) => {
         expect(err).to.be.instanceof(EventFilter.EventIgnoredError);
@@ -50,7 +54,7 @@ describe('EventFilter', () => {
     });
 
     it('EventIgnoredError\' message is customizable', (done) => {
-      const filter = EventFilter.createSync(() => [false, '%s is not %s', 'apple', 'banana']);
+      const filter = EventFilter.createSync(shouldAccept(false, 'apple is not banana'));
 
       filter(eventRef, (err, event) => {
         expect(err).to.be.instanceof(EventFilter.EventIgnoredError);
@@ -121,7 +125,7 @@ describe('EventFilter', () => {
       const filter = EventFilter.createAsync(func);
 
       td.when(func(eventRef, td.callback))
-        .thenCallback(null, false, '%s is not %s', 'apple', 'banana');
+        .thenCallback(null, false, 'apple is not banana');
 
       filter(eventRef, (err, event) => {
         expect(err).to.be.instanceof(EventFilter.EventIgnoredError);
@@ -213,10 +217,10 @@ describe('EventFilter', () => {
       expect(error.message).to.equal('Event(id=42) ignored: xxx');
     });
 
-    it('reason may be util.format() style args', () => {
-      const error = new EventFilter.EventIgnoredError(eventRef, 'num %d', 42);
-      expect(error.message).to.equal('Event(id=42) ignored: num 42');
-    });
+    // it('reason may be util.format() style args', () => {
+    //   const error = new EventFilter.EventIgnoredError(eventRef, 'num %d', 42);
+    //   expect(error.message).to.equal('Event(id=42) ignored: num 42');
+    // });
 
     it('reason is optional', () => {
       const error = new EventFilter.EventIgnoredError(eventRef);
