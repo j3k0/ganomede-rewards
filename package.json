@@ -1,6 +1,6 @@
 {
   "name": "rewards",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "private": true,
   "api": "rewards/v1",
   "description": "rewards microservice",

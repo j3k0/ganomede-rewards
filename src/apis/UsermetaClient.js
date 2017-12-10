@@ -15,14 +15,24 @@ class UsermetaClient extends BaseClient {
     const names = toArray(metaNamesArg).join(',');
     const path = urlEscape`/${userIds}/${names}?secret=${this.secret}`;
 
-    this.apiCall('get', path, callback);
+    this.apiCall('get', path, (err, reply) => {
+      if (err)
+        callback(new Error('usermeta.read(' + names + ') failed: ' + err));
+      else
+        callback(err, reply);
+    });
   }
 
   write (userId, metaName, value, callback) {
     const token = `${this.secret}.${userId}`;
     const path = urlEscape`/auth/${token}/${metaName}`;
 
-    this.apiCall('post', path, {value}, callback);
+    this.apiCall('post', path, {value}, (err, reply) => {
+      if (err)
+        callback(new Error('usermeta.write(' + metaName + ') failed: ' + err));
+      else
+        callback(err, reply);
+    });
   }
 
   hasKey (userId, metaName, callback) {
