@@ -37,9 +37,10 @@ class UsermetaClient extends BaseClient {
 
   hasKey (userId, metaName, callback) {
     this.read(userId, metaName, (err, reply) => {
-      return err
-        ? callback(err)
-        : callback(null, reply[userId].hasOwnProperty(metaName));
+      if (err)
+        callback(new Error('usermeta.hasKey(' + metaName + ') failed: ' + err));
+      else
+        callback(null, reply[userId].hasOwnProperty(metaName));
     });
   }
 }

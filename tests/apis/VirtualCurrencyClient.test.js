@@ -5,6 +5,7 @@ const VirtualCurrencyClient = require('../../src/apis/VirtualCurrencyClient');
 describe('VirtualCurrencyClient', () => {
   describe('#reward()', () => {
     it('rewards user', (done) => {
+      const eventLogger = td.object([]);
       const client = new VirtualCurrencyClient({
         protocol: 'https',
         hostname: 'localhost',
@@ -28,7 +29,7 @@ describe('VirtualCurrencyClient', () => {
       td.when(client.api.post('/virtualcurrency/v1/rewards', expectedBody, td.callback))
         .thenCallback(null, {}, {}, {});
 
-      client.reward('alice', 10, 'points', {some: 'data'}, done);
+      client.reward(eventLogger, 'alice', 10, 'points', {some: 'data'}, done);
     });
   });
 });

@@ -15,10 +15,10 @@ class RewardsUsers {
     return `$reward$${this.rewardId}`;
   }
 
-  reward (userId, callback) {
+  reward (eventLogger, userId, callback) {
     async.series([
       (cb) => this.usermeta.write(userId, this._key(), String(Date.now()), cb),
-      (cb) => this.vcurrency.reward(userId, this.amount, this.currency, {rewardId: this.rewardId}, cb)
+      (cb) => this.vcurrency.reward(eventLogger, userId, this.amount, this.currency, {rewardId: this.rewardId}, cb)
     ], callback);
   }
 

@@ -9,7 +9,7 @@ class VirtualCurrencyClient extends BaseClient {
     this.from = rewardFrom;
   }
 
-  reward (userId, amount, currency, data, callback) {
+  reward (eventLogger, userId, amount, currency, data, callback) {
     const body = {
       to: userId,
       from: this.from,
@@ -19,7 +19,14 @@ class VirtualCurrencyClient extends BaseClient {
       data
     };
 
-    this.apiCall('post', '/rewards', body, callback);
+    this.apiCall('post', '/rewards', body, (err, reply) => {
+      if (err) {
+        eventLogger.error({body, err}, 'VirtualCurrency POST /rewards failed');
+        callback(new Error('virtualCurrency.reward() failed: ' + err));
+      }
+      else
+        callback(null, reply);
+    });
   }
 }
 

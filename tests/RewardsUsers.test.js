@@ -17,6 +17,7 @@ describe('RewardsUsers', () => {
     it('writes timestamp to usermeta and rewards user', (done) => {
       const usermeta = td.object(['write']);
       const vcurrency = td.object(['reward']);
+      const eventLogger = td.object([]);
       const rewardsUsers = createClient({usermeta, vcurrency});
       const now = Date.now();
 
@@ -25,15 +26,16 @@ describe('RewardsUsers', () => {
       td.when(usermeta.write('alice', rewardMetaKey, String(now), td.callback))
         .thenCallback(null, {});
 
-      td.when(vcurrency.reward('alice', 100, 'game A coins', {rewardId}, td.callback))
+      td.when(vcurrency.reward(eventLogger, 'alice', 100, 'game A coins', {rewardId}, td.callback))
         .thenCallback(null, {});
 
-      rewardsUsers.reward('alice', done);
+      rewardsUsers.reward(eventLogger, 'alice', done);
     });
 
     it('when usermeta write fails, no reward is issued', (done) => {
       const usermeta = td.object(['write']);
       const vcurrency = td.object(['reward']);
+      const eventLogger = td.object([]);
       const rewardsUsers = createClient({usermeta, vcurrency});
       const now = Date.now();
 
@@ -42,7 +44,7 @@ describe('RewardsUsers', () => {
       td.when(usermeta.write('alice', rewardMetaKey, String(now), td.callback))
         .thenCallback(new Error('Oops'));
 
-      rewardsUsers.reward('alice', (err) => {
+      rewardsUsers.reward(eventLogger, 'alice', (err) => {
         expect(err).to.be.instanceof(Error);
         expect(err.message).to.equal('Oops');
         td.assert(vcurrency.reward).callCount(0);
