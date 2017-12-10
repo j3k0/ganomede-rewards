@@ -22,7 +22,7 @@ describe('EventFilter', () => {
     });
 
     it('callback invoked on next tick', (done) => {
-      const filter = EventFilter.createSync(shouldAccept(true))
+      const filter = EventFilter.createSync(shouldAccept(true));
       let sameTick = true;
 
       filter(eventRef, () => {

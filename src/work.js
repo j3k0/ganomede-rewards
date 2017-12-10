@@ -44,7 +44,7 @@ class Worker {
 
     this.statsd.increment('events');
 
-    eventLogger = logger.child({eventId:event.id});
+    const eventLogger = logger.child({eventId: event.id});
     eventLogger.debug(event, 'onEvent');
 
     async.waterfall([
@@ -52,7 +52,7 @@ class Worker {
       ...this.checks,
       (event, cb) => {
         eventLogger.info('Sending Reward');
-        this.rewardsUsers.reward(event.data.userId.userId, cb)
+        this.rewardsUsers.reward(event.data.userId.userId, cb);
       }
     ], (error) => {
       if (error instanceof EventFilter.EventIgnoredError) {
